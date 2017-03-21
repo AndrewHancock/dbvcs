@@ -13,7 +13,7 @@ public class Test {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 
 			// step2 create the connection object
-			Connection con = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.232:1521:xe", "hr", "test");
+			Connection con = DriverManager.getConnection("jdbc:oracle:thin:@192.168.1.232:50001:xe", "hr", "test");
 
 			// step3 create the statement object
 			Statement stmt = con.createStatement();
