@@ -1,13 +1,44 @@
 package dbvcs;
 
+
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import dbvcs.metadata.model.Table;
 
 public class Test {
 
 	public static void main(String[] args) {
+		Set<Table> tableSet = new HashSet<>();
+		tableSet.add(new Table("testTable1", new HashSet<>(Arrays.asList(new String[] { "field1", "field2", "field3"} ))));
+		tableSet.add(new Table("testTable2", new HashSet<>(Arrays.asList(new String[] { "field_abc", "field_def", "field_hij"} ))));
+		
+		
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		
+		String json = gson.toJson(tableSet);
+		
+		System.out.println(gson.toJson(tableSet));
+		
+		Type setType = new TypeToken<Set<Table>>() {}.getType();
+		tableSet = gson.fromJson(json, setType);
+		
+		testSql();
+
+	}
+
+	private static void testSql() 
+	{
 		try {
 			// step1 load the driver class
 			Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -29,7 +60,5 @@ public class Test {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-
 	}
-
 }
