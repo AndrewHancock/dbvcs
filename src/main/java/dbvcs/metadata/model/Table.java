@@ -7,26 +7,26 @@ import java.util.stream.Collectors;
 public class Table {
 	private String tableName;
 	private Set<String> keyFieldNames;
-	private Collection<String> fieldNames;
+	private Collection<Field> fields;
 	
-	public Table(String tableName, Collection<String> fieldNames) {
+	public Table(String tableName, Collection<Field> fields) {
 		this.tableName = tableName;
-		this.fieldNames = fieldNames;
+		this.fields = fields;
 	}
 	
 	public String getTableName() {
 		return tableName;
-	}
-
-	public Collection<String> getFieldNames() {
-		return fieldNames;
 	}
 	
 	public Collection<String> getKeyFieldNames() {
 		return keyFieldNames;
 	}
 	
+	public Collection<Field> getFields() {
+		return fields;
+	}
+	
 	public String toString() {
-		return tableName + "(" + (fieldNames != null ? fieldNames.stream().collect(Collectors.joining(", ")): "") + ")";
+		return tableName + "(" + (fields != null ? fields.stream().map(f -> f.toString()).collect(Collectors.joining(", ")): "") + ")";
 	}
 }
