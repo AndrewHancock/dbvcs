@@ -2,6 +2,7 @@ package dbvcs.metadata.model;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Table {
 	private String tableName;
@@ -23,5 +24,9 @@ public class Table {
 	
 	public Collection<String> getKeyFieldNames() {
 		return keyFieldNames;
+	}
+	
+	public String toString() {
+		return tableName + "(" + (fieldNames != null ? fieldNames.stream().collect(Collectors.joining(", ")): "") + ")";
 	}
 }
