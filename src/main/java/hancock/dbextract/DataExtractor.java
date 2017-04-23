@@ -11,6 +11,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -19,11 +22,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import hancock.dbextract.cli.ExtractCli;
+import hancock.dbextract.cli.ExtractOptions;
 import hancock.dbextract.metadata.jdbc.oracle.OracleMetadataExtractor;
 import hancock.dbextract.model.Table;
 
-public class Test {
-	private static Gson gson = new GsonBuilder().setPrettyPrinting().create();		
+public class DataExtractor {
+	
+	private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	
 	private static void writeTableMetadata(Path filePath, Collection<Table> tables) throws IOException {
 		try(Writer writer = new FileWriter(filePath.toString())) {
@@ -49,22 +55,33 @@ public class Test {
 	}	
 
 	public static void main(String[] args) throws Exception {
-		createTargetDirectory(args[1]);
-		Collection<Table> tables = readTableMetadata(Paths.get(args[0]));
-		Collection<Table> tableMetadata = OracleMetadataExtractor.extractMetadata("jdbc:oracle:thin:@192.168.1.232:50001:xe", tables);
-		writeTableMetadata(Paths.get(args[1], "metadata.json"), tableMetadata);
+		
+		Options cliOptions = ExtractCli.getCliOptions();
+		ExtractOptions options = null;
+		try {
+			
+			options = ExtractCli.parseArguments(args, cliOptions);
+		}
+		catch (ParseException e) {
+			new HelpFormatter().printHelp("DataExtractor", cliOptions);
+			System.exit(-1);
+		}
+		
+		createTargetDirectory(options.getOutputDirectory());
+		Collection<Table> tables = readTableMetadata(Paths.get(options.getCataloguePath()));
+		Collection<Table> tableMetadata = OracleMetadataExtractor.extractMetadata(options.getJdbcPath(), tables);
+		writeTableMetadata(Paths.get(options.getOutputDirectory(), "metadata.json"), tableMetadata);
 		
 		
 		SparkSession spark =  SparkSession.builder()
 				.master("local")
-				.appName("SparkCSVExample")
-				.config("spark.some.config.option", "some-value")
+				.appName("SparkCSVExample")				
 				.getOrCreate();
 		
-		tableMetadata.forEach(table -> {
+		for(Table table : tableMetadata) {		
 			Dataset<Row> employeeTable = spark.read()
 				.format("jdbc")
-				.option("url", "jdbc:oracle:thin:@192.168.1.232:50001:xe")
+				.option("url", options.getJdbcPath())
 				.option("dbtable", table.getTableName())
 				.option("user", "hr")
 				.option("password", "test")
@@ -72,8 +89,8 @@ public class Test {
 			
 			employeeTable.write()
 				.option("header", true)
-				.csv(Paths.get(args[1], table.getTableName()).toString());
-		});
+				.csv(Paths.get(options.getOutputDirectory(), table.getTableName()).toString());
+		}
 	}
 
 
