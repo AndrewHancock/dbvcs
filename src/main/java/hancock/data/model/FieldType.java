@@ -1,4 +1,4 @@
-package hancock.dbextract.model;
+package hancock.data.model;
 
 public enum FieldType {
 	STRING

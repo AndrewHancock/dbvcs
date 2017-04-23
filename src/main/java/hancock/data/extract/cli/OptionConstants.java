@@ -1,4 +1,4 @@
-package hancock.dbextract.cli;
+package hancock.data.extract.cli;
 
 public class OptionConstants {
 	public static final String JDBC_URI = "j";

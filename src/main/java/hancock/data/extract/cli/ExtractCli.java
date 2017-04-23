@@ -1,4 +1,4 @@
-package hancock.dbextract.cli;
+package hancock.data.extract.cli;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;

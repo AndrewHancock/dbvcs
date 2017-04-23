@@ -1,9 +1,5 @@
-package hancock.dbextract.metadata.jdbc.oracle;
+package hancock.data.extract.jdbc.oracle;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -12,10 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import hancock.dbextract.model.Field;
-import hancock.dbextract.model.Table;
+import hancock.data.model.Field;
+import hancock.data.model.Table;
 
 public class OracleMetadataExtractor {
 

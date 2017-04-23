@@ -1,4 +1,4 @@
-package hancock.dbextract;
+package hancock.data.extract;
 
 
 import java.io.FileWriter;
@@ -22,10 +22,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import hancock.dbextract.cli.ExtractCli;
-import hancock.dbextract.cli.ExtractOptions;
-import hancock.dbextract.metadata.jdbc.oracle.OracleMetadataExtractor;
-import hancock.dbextract.model.Table;
+import hancock.data.extract.cli.ExtractCli;
+import hancock.data.extract.cli.ExtractOptions;
+import hancock.data.extract.jdbc.oracle.OracleMetadataExtractor;
+import hancock.data.model.Table;
 
 public class DataExtractor {
 	

@@ -1,4 +1,4 @@
-package hancock.dbextract.model;
+package hancock.data.model;
 
 import java.util.Collection;
 import java.util.Set;

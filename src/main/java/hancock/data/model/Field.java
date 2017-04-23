@@ -1,4 +1,4 @@
-package hancock.dbextract.model;
+package hancock.data.model;
 
 public class Field {
 	private String name;
