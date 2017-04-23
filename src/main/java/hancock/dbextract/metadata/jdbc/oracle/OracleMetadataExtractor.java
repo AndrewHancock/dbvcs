@@ -1,4 +1,4 @@
-package dbvcs.metadata.jdbc;
+package hancock.dbextract.metadata.jdbc.oracle;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -14,13 +14,10 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
+import hancock.dbextract.model.Field;
+import hancock.dbextract.model.Table;
 
-import dbvcs.metadata.model.Field;
-import dbvcs.metadata.model.Table;
-
-public class DatasetExtractor {
+public class OracleMetadataExtractor {
 
 	private static final String QUERY = "SELECT\n" + "\tTABLE_NAME\n" + "\t,COLUMN_NAME\n" + "\t,DATA_TYPE\n"
 			+ "FROM ALL_TAB_COLS\n";
@@ -53,20 +50,6 @@ public class DatasetExtractor {
 			}
 			tableInventory.add(new Table(currentTableName, fields));
 			return tableInventory;
-		}
-	}
-
-	public static void extractTables(String jdbcString, Collection<Table> tables, String targetFolder) throws SQLException, IOException {
-		for (Table table : tables) {
-			try (Connection con = DriverManager.getConnection(jdbcString, "hr", "test");
-					Statement stmt = con.createStatement();
-					CSVPrinter printer = new CSVPrinter( new FileWriter(Paths.get(targetFolder, table.getTableName() + ".csv").toString()), CSVFormat.RFC4180)) {
-				String queryStr = "SELECT\n\t" +  table.getFields().stream().map(f -> f.getName()).collect(Collectors.joining("\n\t,")) + "\nFROM " + table.getTableName();
-				ResultSet rs = stmt.executeQuery(queryStr);
-				
-				printer.printRecords(rs);
-			}
-
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package dbvcs.metadata.model;
+package hancock.dbextract.model;
 
 import java.util.Collection;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package dbvcs;
+package hancock.dbextract;
 
 
 import java.io.FileWriter;
@@ -9,17 +9,18 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
 import java.util.Collection;
+
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import dbvcs.metadata.jdbc.DatasetExtractor;
-import dbvcs.metadata.model.Table;
+import hancock.dbextract.metadata.jdbc.oracle.OracleMetadataExtractor;
+import hancock.dbextract.model.Table;
 
 public class Test {
 	private static Gson gson = new GsonBuilder().setPrettyPrinting().create();		
@@ -50,9 +51,29 @@ public class Test {
 	public static void main(String[] args) throws Exception {
 		createTargetDirectory(args[1]);
 		Collection<Table> tables = readTableMetadata(Paths.get(args[0]));
-		Collection<Table> tableMetadata = DatasetExtractor.extractMetadata("jdbc:oracle:thin:@192.168.1.232:50001:xe", tables);
+		Collection<Table> tableMetadata = OracleMetadataExtractor.extractMetadata("jdbc:oracle:thin:@192.168.1.232:50001:xe", tables);
 		writeTableMetadata(Paths.get(args[1], "metadata.json"), tableMetadata);
-		DatasetExtractor.extractTables("jdbc:oracle:thin:@192.168.1.232:50001:xe", tableMetadata, args[1] );
+		
+		
+		SparkSession spark =  SparkSession.builder()
+				.master("local")
+				.appName("SparkCSVExample")
+				.config("spark.some.config.option", "some-value")
+				.getOrCreate();
+		
+		tableMetadata.forEach(table -> {
+			Dataset<Row> employeeTable = spark.read()
+				.format("jdbc")
+				.option("url", "jdbc:oracle:thin:@192.168.1.232:50001:xe")
+				.option("dbtable", table.getTableName())
+				.option("user", "hr")
+				.option("password", "test")
+				.load();
+			
+			employeeTable.write()
+				.option("header", true)
+				.csv(Paths.get(args[1], table.getTableName()).toString());
+		});
 	}
 
 

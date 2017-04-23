@@ -1,4 +1,4 @@
-package dbvcs.metadata.model;
+package hancock.dbextract.model;
 
 public enum FieldType {
 	STRING
