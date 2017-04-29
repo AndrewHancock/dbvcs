@@ -48,7 +48,6 @@ public class DataExtractor {
 
 		final String outputDirectory = options.getOutputDirectory();
 		tableMetadata.forEach(table -> extractor.extractTable(table, Paths.get(outputDirectory, table.getTableName())));
-
 	}
 
 }

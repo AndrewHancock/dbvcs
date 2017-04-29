@@ -21,7 +21,6 @@ public class TableExtractor {
 			.jdbc(uri, schema.getTableName(), new Properties())
 			.write()
 			.option("header", true)
-			.csv(outputPath.toString());
-		
+			.csv(outputPath.toString());		
 	}
 }
