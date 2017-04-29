@@ -9,9 +9,10 @@ public class Table {
 	private Set<String> keyFieldNames;
 	private Collection<Field> fields;
 	
-	public Table(String tableName, Collection<Field> fields) {
+	public Table(String tableName, Set<String> keyFieldNames, Collection<Field> fields ) {
 		this.tableName = tableName;
-		this.fields = fields;
+		this.keyFieldNames = keyFieldNames;
+		this.fields = fields;		
 	}
 	
 	public String getTableName() {

@@ -14,7 +14,6 @@ public class TableExtractor {
 	public TableExtractor(SparkSession spark, String uri) {
 		this.spark = spark;
 		this.uri = uri;
-
 	}
 
 	public void extractTable(Table schema, Path outputPath) {
