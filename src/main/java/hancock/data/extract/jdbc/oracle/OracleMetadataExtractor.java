@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import hancock.data.model.Field;
+import hancock.data.model.FieldType;
 import hancock.data.model.Table;
 
 public class OracleMetadataExtractor {
@@ -53,6 +54,21 @@ public class OracleMetadataExtractor {
 		return tableUniqueFieldsMap;
 	}
 
+	private static FieldType mapFieldType(String oracleDataType) {
+		switch (oracleDataType) {
+		case "VARCHAR2":
+		case "CHAR":
+			return FieldType.STRING;
+		case "DATE":
+		case "TIMESTAMP":
+			return FieldType.DATE;
+		case "NUMBER":
+			return FieldType.DECIMAL;
+		default:
+			throw new RuntimeException("Unrecognized oracle data type:" + oracleDataType);
+		}
+	}
+	
 	private static Map<String, Collection<Field>> getTableDefintions(String jdbcString, Collection<Table> tables)
 			throws ClassNotFoundException, SQLException {
 		Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -72,8 +88,7 @@ public class OracleMetadataExtractor {
 					currentTableName = rs.getString(1);					
 					tableInventory.put(currentTableName, new ArrayList<Field>());
 				}
-				tableInventory.get(currentTableName).add(new Field(rs.getString(2)));
-
+				tableInventory.get(currentTableName).add(new Field(rs.getString(2), mapFieldType(rs.getString(3))));
 			}
 			
 			return tableInventory;
