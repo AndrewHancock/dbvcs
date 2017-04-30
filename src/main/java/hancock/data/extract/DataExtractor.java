@@ -40,12 +40,12 @@ public class DataExtractor {
 
 		createTargetDirectory(options.getOutputDirectory());
 		Commit extractConfig = JsonTableSerializer.readCommitJson(Paths.get(options.getCataloguePath()));
-		Commit manifest = new Commit(options.getFormat(), options.getCompressionCodec(), OracleMetadataExtractor.extractMetadata(options.getJdbcPath(), extractConfig.getTables()));
+		Commit manifest = new Commit(extractConfig.getFileFormat(), extractConfig.getCompressionCodec(), OracleMetadataExtractor.extractMetadata(options.getJdbcPath(), extractConfig.getTables()));
 		JsonTableSerializer.writeCommitJson(Paths.get(options.getOutputDirectory(), "metadata.json"), manifest);
 
 		SparkSession spark = SparkSession.builder().master("local").appName("SparkCSVExample").getOrCreate();
 
-		TableExtractor extractor = new TableExtractor(spark, options.getJdbcPath(), options.getFormat(), options.getCompressionCodec());
+		TableExtractor extractor = new TableExtractor(spark, options.getJdbcPath(), manifest);
 
 		final String outputDirectory = options.getOutputDirectory();
 		manifest.getTables().forEach(table -> extractor.extractTable(table, Paths.get(outputDirectory, table.getTableName())));

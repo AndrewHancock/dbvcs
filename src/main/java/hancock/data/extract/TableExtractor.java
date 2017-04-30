@@ -8,35 +8,45 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
+import hancock.data.model.Commit;
 import hancock.data.model.Table;
 
 public class TableExtractor {
 	private SparkSession spark;
 	private String uri;
-	private String format;
-	private String compression;
-
-	public TableExtractor(SparkSession spark, String uri, String format, String compression) {
+	private Commit commit;
+	
+	public TableExtractor(SparkSession spark, String uri, Commit commit) {
 		this.spark = spark;
 		this.uri = uri;
-		this.format = format;
-		this.compression = compression;
+		this.commit = commit;
 	}
 	
 	private void writeCsv(Dataset<Row> dataset, Path outputPath) {
 		DataFrameWriter<Row> writer = 
 				dataset.write();
 		
-		if(compression != null) {
-			writer = writer.option("compression ", compression);
+		if(commit.getCompressionCodec() != null) {
+			writer = writer.option("compression ", commit.getCompressionCodec());
 		}
 		writer.csv(outputPath.toString());
+	}
+	
+	private void writeParquet(Dataset<Row> dataset, Path outputPath) {
+		DataFrameWriter<Row> writer = dataset.write();
+		
+		writer.parquet(outputPath.toString());
 	}
 
 	public void extractTable(Table schema, Path outputPath) {
 		Dataset<Row> dataset = spark.read()
 			.jdbc(uri, schema.getTableName(), new Properties());
 		
-		writeCsv(dataset, outputPath);
+		if(commit.getFileFormat().toLowerCase().equals("parquet")) {
+			writeParquet(dataset, outputPath);	
+		}
+		else if (commit.getFileFormat().toLowerCase().equals("csv")) {
+			writeCsv(dataset, outputPath);
+		}
 	}
 }

@@ -17,7 +17,7 @@ public class Commit {
 		return fileFormat;
 	}
 	
-	public String getCompressionCode() {
+	public String getCompressionCodec() {
 		return compressionCodec;
 	}
 	

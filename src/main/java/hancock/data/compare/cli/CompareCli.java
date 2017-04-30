@@ -15,8 +15,6 @@ public class CompareCli {
 		options.addOption("l", "left", true, "Path of the left side repository to compare.");
 		options.addOption("r", "right", true, "Path of the right side repository to compare.");
 		options.addOption("o", "output", true, "Output path for comparison results. Directory must not exist.");
-		options.addOption("f", "format", true, "File format: csv or partquet");
-		options.addOption("c", "compression", true, "Compression code: gzip or snappy");
 		
 		return options;
 	}
@@ -39,14 +37,6 @@ public class CompareCli {
 		applyOption(options.getOption("l"), cmd, opts::setLeftPath);
 		applyOption(options.getOption("r"), cmd, opts::setRightPath);
 		applyOption(options.getOption("o"), cmd, opts::setOutputPath);
-		applyOption(options.getOption("f"), cmd, opts::setFormat);
-		applyOption(options.getOption("c"), cmd, opts::setCompressionCodec);
-		
 		return opts;
-	}
-	
-	
-	
-	
-	
+	}	
 }
