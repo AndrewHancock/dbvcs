@@ -4,8 +4,8 @@ public class ExtractOptions {
 	private String jdbcPath;
 	private String outputDirectory;
 	private String cataloguePath;
-	private String userName;
-	private String password;
+	private String format;
+	private String compressionCodec;
 	
 	public String getJdbcPath() {
 		return jdbcPath;
@@ -30,21 +30,20 @@ public class ExtractOptions {
 	public void setCataloguePath(String cataloguePath) {
 		this.cataloguePath = cataloguePath;
 	}
-	
-	public String getUserName() {
-		return userName;
-	}
-	
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-	
-	public String getPassword() {
-		return password;
-	}
-	
-	public void setPassword(String password) {
-		this.password = password;
+
+	public String getFormat() {
+		return format;
 	}
 
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
+	public String getCompressionCodec() {
+		return compressionCodec;
+	}
+
+	public void setCompressionCodec(String compressionCodec) {
+		this.compressionCodec = compressionCodec;
+	}	
 }

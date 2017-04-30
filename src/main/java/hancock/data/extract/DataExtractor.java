@@ -12,6 +12,7 @@ import org.apache.spark.sql.SparkSession;
 import hancock.data.extract.cli.ExtractCli;
 import hancock.data.extract.cli.ExtractOptions;
 import hancock.data.extract.jdbc.oracle.OracleMetadataExtractor;
+import hancock.data.model.Commit;
 import hancock.data.model.Table;
 import hancock.data.model.serialization.JsonTableSerializer;
 
@@ -38,16 +39,16 @@ public class DataExtractor {
 		}
 
 		createTargetDirectory(options.getOutputDirectory());
-		Collection<Table> tables = JsonTableSerializer.readTableMetadata(Paths.get(options.getCataloguePath()));
-		Collection<Table> tableMetadata = OracleMetadataExtractor.extractMetadata(options.getJdbcPath(), tables);
-		JsonTableSerializer.writeTableMetadata(Paths.get(options.getOutputDirectory(), "metadata.json"), tableMetadata);
+		Commit extractConfig = JsonTableSerializer.readCommitJson(Paths.get(options.getCataloguePath()));
+		Commit manifest = new Commit(options.getFormat(), options.getCompressionCodec(), OracleMetadataExtractor.extractMetadata(options.getJdbcPath(), extractConfig.getTables()));
+		JsonTableSerializer.writeCommitJson(Paths.get(options.getOutputDirectory(), "metadata.json"), manifest);
 
 		SparkSession spark = SparkSession.builder().master("local").appName("SparkCSVExample").getOrCreate();
 
-		TableExtractor extractor = new TableExtractor(spark, options.getJdbcPath());
+		TableExtractor extractor = new TableExtractor(spark, options.getJdbcPath(), options.getFormat(), options.getCompressionCodec());
 
 		final String outputDirectory = options.getOutputDirectory();
-		tableMetadata.forEach(table -> extractor.extractTable(table, Paths.get(outputDirectory, table.getTableName())));
+		manifest.getTables().forEach(table -> extractor.extractTable(table, Paths.get(outputDirectory, table.getTableName())));
 	}
 
 }
